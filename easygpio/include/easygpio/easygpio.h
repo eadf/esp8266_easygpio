@@ -34,15 +34,31 @@
 
 #include "c_types.h"
 
+typedef enum {
+  INPUT=0,
+  OUTPUT=1
+} PinMode;
+
+typedef enum {
+  PULLDOWN=2,
+  PULLUP=3,
+  NOPULL=4
+} PullStatus;
+
 /**
  * Returns the gpio name and func for a specific pin.
  */
-bool easygpio_getGpioNameFunc(uint8_t gpio_pin, uint32_t *gpio_name, uint8_t *gpio_func);
+bool easygpio_getGPIONameFunc(uint8_t gpio_pin, uint32_t *gpio_name, uint8_t *gpio_func);
 
 /**
  * Sets the 'gpio_pin' pin as a GPIO and sets the interrupt to trigger on that pin
  */
-bool easygpio_setupInterrupt(uint8_t gpio_pin, bool pullUp, bool pullDown, void (*interruptHandler)(void));
+bool easygpio_attachInterrupt(uint8_t gpio_pin, PullStatus pullStatus, void (*interruptHandler)(void));
+
+/**
+ * Deatach the interrupt handler from the 'gpio_pin' pin.
+ */
+bool easygpio_detachInterrupt(uint8_t gpio_pin);
 
 /**
  * Returns the number of active pins in the gpioMask.
@@ -53,12 +69,14 @@ uint8_t easygpio_countBits(uint32_t gpioMask);
  * Sets the 'gpio_pin' pin as an input GPIO and sets the pull up and
  * pull down registers for that pin.
  */
-bool easygpio_setupAsInput(uint8_t gpio_pin, bool pullUp, bool pullDown);
-
+bool easygpio_pinMode(uint8_t gpio_pin, PullStatus pullStatus, PinMode pinMode);
 
 /**
- * Sets the 'gpio_pin' pin as a GPIO output
+ * Sets the pull up and pull down registers for a pin.
+ * 'pullUp' takes precedence over pullDown
  */
-bool easygpio_setupAsOutput(uint8_t gpio_pin);
+static bool
+easygpio_pullMode(uint8_t gpio_pin, PullStatus pullStatus);
+
 
 #endif /* EASYGPIO_INCLUDE_EASYGPIO_EASYGPIO_H_ */
