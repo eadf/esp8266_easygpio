@@ -10,30 +10,28 @@ To setup a pin as a GPIO input you can now just do this:
 ...
 
 uint8_t gpio_pin = 0;
-bool pullUp = false;
-bool pullDown = false;
-easygpio_setupAsInput(uint8_t gpio_pin, bool pullUp, bool pullDown);
+PullStatus pullStatus = NOPULL;
+PinMode pinMode = INPUT;
+bool easygpio_pinMode(gpio_pin, pullStatus, pinMode);
 ```
 
 Same thing with outputs:
 ```
-bool easygpio_setupAsOutput(uint8_t gpio_pin)
+uint8_t gpio_pin = 0;
+PullStatus pullStatus = NOPULL;
+PinMode pinMode = OUTPUT;
+bool easygpio_pinMode(gpio_pin, pullStatus, pinMode);
 ```
+pullStatus does not apply to output pins.
 
-You can set your pullup and pulldown registers on your input pins:
-
+You might still need the gpio_name and func. No problem:
 ```
-bool easygpio_setupPulls(uint32_t gpio_name, bool pullUp, bool pullDown)
-```
-
-To use the above method you need the gpio_name. No problem:
-```
-bool easygpio_getGpioNameFunc(uint8_t gpio_pin, uint32_t *gpio_name, uint8_t *gpio_func)
+bool easygpio_getGPIONameFunc(uint8_t gpio_pin, uint32_t *gpio_name, uint8_t *gpio_func)
 ```
 
 You can even setup an interrupt handler:
 ```
-bool easygpio_setupInterrupt(uint8_t gpio_pin, bool pullUp, bool pullDown, void (*interruptHandler)(void))
+bool easygpio_attachInterrupt(uint8_t gpio_pin, PullStatus pullStatus, void (*interruptHandler)(void))
 ```
 
 But you will still have to do this little dance in your interrupt handler code:
