@@ -10,16 +10,16 @@ To setup a pin as a GPIO input you can now just do this:
 ...
 
 uint8_t gpio_pin = 0;
-PullStatus pullStatus = NOPULL;
-PinMode pinMode = INPUT;
+EasyGPIO_PullStatus pullStatus = EASYGPIO_NOPULL;
+EasyGPIO_PinMode pinMode = EASYGPIO_INPUT;
 bool easygpio_pinMode(gpio_pin, pullStatus, pinMode);
 ```
 
 Same thing with outputs:
 ```
 uint8_t gpio_pin = 0;
-PullStatus pullStatus = NOPULL;
-PinMode pinMode = OUTPUT;
+EasyGPIO_PullStatus pullStatus = EASYGPIO_NOPULL;
+EasyGPIO_PinMode pinMode = EASYGPIO_OUTPUT;
 bool easygpio_pinMode(gpio_pin, pullStatus, pinMode);
 ```
 pullStatus does not apply to output pins.
@@ -31,7 +31,7 @@ bool easygpio_getGPIONameFunc(uint8_t gpio_pin, uint32_t *gpio_name, uint8_t *gp
 
 You can even setup an interrupt handler:
 ```
-bool easygpio_attachInterrupt(uint8_t gpio_pin, PullStatus pullStatus, void (*interruptHandler)(void))
+bool easygpio_attachInterrupt(uint8_t gpio_pin, EasyGPIO_PullStatus pullStatus, void (*interruptHandler)(void))
 ```
 
 But you will still have to do this little dance in your interrupt handler code:
@@ -50,4 +50,4 @@ See an example [here](https://github.com/eadf/esp8266_digoleserial)
 
 esp_iot_sdk_v0.9.4_14_12_19 ( v0.9.5 breaks everything )
 
-Actually, i have not tested this with v0.9.5. I tested a clean sdk 0.9.5 install with one of the basic examples (could have been blinky). It compiled and uploaded fine but the esp had a infinite crash loop with some message about "MEM CHK FAIL" on the console. So i threw the whole sdk out. I will try upgrading the sdk again once [mqtt](https://github.com/tuanpmt/esp_mqtt) upgrades to 0.9.5+.
+Actually, i have not tested this with v0.9.5. I tested a clean [sdk 0.9.5 install](https://github.com/pfalcon/esp-open-sdk) with one of the basic examples (could have been blinky). It compiled and uploaded fine but the esp had a infinite crash loop with some message about "MEM CHK FAIL" on the console. So i threw the whole sdk out. I will try upgrading the sdk again once [mqtt](https://github.com/tuanpmt/esp_mqtt) upgrades to 0.9.5+.
