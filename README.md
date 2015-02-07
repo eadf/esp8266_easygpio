@@ -46,6 +46,14 @@ static void interrupt_handler(void) {
 
 See an example [here](https://github.com/eadf/esp8266_digoleserial)
 
+Use the methods and macros defined in gpio.h (from the sdk) to access the gpio values.
+```
+#include "gpio.h"
+...
+GPIO_OUTPUT_SET(gpio_no, bit_value) // GPIO_OUTPUT_SET(0,1) sets gpio0 to high
+GPIO_DIS_OUTPUT(gpio_no) // GPIO_DIS_OUTPUT(2) turns off output on gpio2
+GPIO_INPUT_GET(gpio_no) // GPIO_INPUT_GET(12) returns the input value of gpio12
+```
 ##Required:
 
 esp_iot_sdk_v0.9.4_14_12_19
