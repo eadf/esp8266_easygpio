@@ -169,7 +169,7 @@ easygpio_pinMode(uint8_t gpio_pin, EasyGPIO_PullStatus pullStatus, EasyGPIO_PinM
   PIN_FUNC_SELECT(gpio_name, gpio_func);
   easygpio_setupPullsByName(gpio_name, pullStatus);
 
-  if (EASYGPIO_OUTPUT == pinMode) {
+  if (EASYGPIO_OUTPUT != pinMode) {
     GPIO_DIS_OUTPUT(gpio_pin);
   }
   return true;
