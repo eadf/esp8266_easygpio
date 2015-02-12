@@ -50,6 +50,7 @@ typedef enum {
  */
 bool easygpio_getGPIONameFunc(uint8_t gpio_pin, uint32_t *gpio_name, uint8_t *gpio_func);
 
+#ifndef XT_RTOS_NAME  // quick and dirty 'fix' for freertos interrupt differences
 /**
  * Sets the 'gpio_pin' pin as a GPIO and sets the interrupt to trigger on that pin
  */
@@ -59,6 +60,8 @@ bool easygpio_attachInterrupt(uint8_t gpio_pin, EasyGPIO_PullStatus pullStatus, 
  * Deatach the interrupt handler from the 'gpio_pin' pin.
  */
 bool easygpio_detachInterrupt(uint8_t gpio_pin);
+
+#endif
 
 /**
  * Returns the number of active pins in the gpioMask.

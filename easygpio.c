@@ -30,9 +30,32 @@
 */
 
 #include "easygpio/easygpio.h"
-#include "gpio.h"
+#include "eagle_soc.h"
+#ifdef RTOS
+#include "pin_mux_register.h"
+#else
 #include "osapi.h"
 #include "ets_sys.h"
+#include "gpio.h"
+#endif
+#include "ets_sys.h"
+
+#ifdef RTOS
+#include "gpio_register.h"
+// this is supposed to be defined in gpio.h, but since rtos does not include 
+// that file i have to make a dirty fix here.
+
+#define GPIO_AS_PIN_SOURCE                        0
+
+typedef enum {
+    GPIO_PIN_INTR_DISABLE = 0,
+    GPIO_PIN_INTR_POSEDGE = 1,
+    GPIO_PIN_INTR_NEGEDGE = 2,
+    GPIO_PIN_INTR_ANYEGDE = 3,
+    GPIO_PIN_INTR_LOLEVEL = 4,
+    GPIO_PIN_INTR_HILEVEL = 5
+} GPIO_INT_TYPE;
+#endif
 
 /**
  * Returns the number of active pins in the gpioMask.
@@ -175,6 +198,8 @@ easygpio_pinMode(uint8_t gpio_pin, EasyGPIO_PullStatus pullStatus, EasyGPIO_PinM
   return true;
 }
 
+#ifndef XT_RTOS_NAME  // quick and dirty 'fix' for freertos interrupt differences
+
 /**
  * Sets the 'gpio_pin' pin as a GPIO and sets the interrupt to trigger on that pin
  */
@@ -228,4 +253,6 @@ easygpio_detachInterrupt(uint8_t gpio_pin) {
   gpio_pin_intr_state_set(GPIO_ID_PIN(gpio_pin), GPIO_PIN_INTR_DISABLE);
   return true;
 }
+
+#endif
 
