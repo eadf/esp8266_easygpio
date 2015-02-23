@@ -77,6 +77,6 @@ GPIO16      | not implemented yet (no interrupt on this pin)
 
 ##Required:
 
-esp_iot_sdk_v0.9.4_14_12_19
+esp_iot_sdk_v0.9.4_14_12_19 or higher.
 
 I've successfully tested this with sdk v0.9.5 (linux makefile).
