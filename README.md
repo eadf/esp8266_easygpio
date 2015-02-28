@@ -65,12 +65,9 @@ GPIO2 	   | this pin selects bootmode [(pull up for *normal* boot)](https://gith
 GPIO3      | normally UART0 RX (you can use [stdout](https://github.com/eadf/esp8266_stdout) to use it as GPIO)
 GPIO4      | sometimes mislabeled as GPIO5 (esp-12)
 GPIO5      | sometimes mislabeled as GPIO4 (esp-12)
-GPIO9      |  not available on esp-07 & esp-12
-GPIO10      | not available on esp-07 & esp-12
-GPIO11      | not available on esp-07 & esp-12
-GPIO12      | 
-GPIO13      |
-GPIO14      |
+GPIO12     | 
+GPIO13     |
+GPIO14     |
 GPIO15 	   | this pin selects bootmode [(pull down for *normal* boot)](https://github.com/esp8266/esp8266-wiki/wiki/Boot-Process#esp-boot-modes)
 GPIO16      | not implemented yet (no interrupt on this pin)
 
