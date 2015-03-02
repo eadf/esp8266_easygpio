@@ -51,9 +51,11 @@ typedef enum {
 bool easygpio_getGPIONameFunc(uint8_t gpio_pin, uint32_t *gpio_name, uint8_t *gpio_func);
 
 /**
- * Sets the 'gpio_pin' pin as a GPIO and sets the interrupt to trigger on that pin
+ * Sets the 'gpio_pin' pin as a GPIO and sets the interrupt to trigger on that pin.
+ * The 'interruptArg' is the function argument that will be sent to your interruptHandler
+ * (this way you can several interrupts with one interruptHandler)
  */
-bool easygpio_attachInterrupt(uint8_t gpio_pin, EasyGPIO_PullStatus pullStatus, void (*interruptHandler)(int8_t key));
+bool easygpio_attachInterrupt(uint8_t gpio_pin, EasyGPIO_PullStatus pullStatus, void (*interruptHandler)(void *arg), void *interruptArg);
 
 /**
  * Deatach the interrupt handler from the 'gpio_pin' pin.

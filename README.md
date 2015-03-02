@@ -31,13 +31,13 @@ bool easygpio_getGPIONameFunc(uint8_t gpio_pin, uint32_t *gpio_name, uint8_t *gp
 
 You can even setup an interrupt handler:
 ```
-bool easygpio_attachInterrupt(uint8_t gpio_pin, EasyGPIO_PullStatus pullStatus, void (*interruptHandler)(uint8_t key))
+bool easygpio_attachInterrupt(uint8_t gpio_pin, EasyGPIO_PullStatus pullStatus, void (*interruptHandler)(void* arg), void *interruptArg)
 ```
 
 But you will still have to do this little dance in your interrupt handler code:
 ```
 
-static void interrupt_handler(uint8_t key) {
+static void interrupt_handler(void* arg) {
   uint32_t gpio_status = GPIO_REG_READ(GPIO_STATUS_ADDRESS);
   //clear interrupt status
   GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, gpio_status & BIT(my_interrupt_gpio_pin));

@@ -52,7 +52,7 @@ easygpio_countBits(uint32_t gpioMask) {
  * Returns the gpio name and func for a specific pin.
  */
 bool ICACHE_FLASH_ATTR
-easygpio_getGPIONameFunc(uint8_t gpio_pin, uint32_t *gpio_name, uint8_t *gpio_func ) {
+easygpio_getGPIONameFunc(uint8_t gpio_pin, uint32_t *gpio_name, uint8_t *gpio_func) {
 
   if (gpio_pin == 6 || gpio_pin == 7 || gpio_pin == 8 || gpio_pin == 11 || gpio_pin >= 17) {
     os_printf("easygpio_getGPIONameFunc Error: There is no GPIO%d, check your code\n", gpio_pin);
@@ -176,10 +176,12 @@ easygpio_pinMode(uint8_t gpio_pin, EasyGPIO_PullStatus pullStatus, EasyGPIO_PinM
 }
 
 /**
- * Sets the 'gpio_pin' pin as a GPIO and sets the interrupt to trigger on that pin
+ * Sets the 'gpio_pin' pin as a GPIO and sets the interrupt to trigger on that pin.
+ * The 'interruptArg' is the function argument that will be sent to your interruptHandler
+ * (this way you can several interrupts with one interruptHandler)
  */
 bool ICACHE_FLASH_ATTR
-easygpio_attachInterrupt(uint8_t gpio_pin, EasyGPIO_PullStatus pullStatus, void (*interruptHandler)(int8_t key)) {
+easygpio_attachInterrupt(uint8_t gpio_pin, EasyGPIO_PullStatus pullStatus, void (*interruptHandler)(void *arg), void *interruptArg) {
   uint32_t gpio_name;
   uint8_t gpio_func;
 
@@ -191,7 +193,7 @@ easygpio_attachInterrupt(uint8_t gpio_pin, EasyGPIO_PullStatus pullStatus, void 
     return false;
   }
 
-  ETS_GPIO_INTR_ATTACH(interruptHandler, NULL);
+  ETS_GPIO_INTR_ATTACH(interruptHandler, interruptArg);
   ETS_GPIO_INTR_DISABLE();
 
   PIN_FUNC_SELECT(gpio_name, gpio_func);
