@@ -33,7 +33,7 @@
 #include "easygpio/easygpio.h"
 #include "stdout/stdout.h"
 
-#define SAMPLE_PERIOD 5000 // 5 seconds
+#define SAMPLE_PERIOD 200 // 200 ms
 static os_timer_t dht22_timer;
 uint8_t pinsToTest[] = {0,2,4,5,12,13,14,15,16};
 uint8_t pinsToTestLen = 9;
@@ -41,7 +41,7 @@ uint8_t pinsToTestLen = 9;
 static void ICACHE_FLASH_ATTR
 loop(void) {
   // set this shift-rotating pattern to anything you like
-  static uint32_t shiftReg = 0b101010101;
+  static uint32_t shiftReg = 1;//0b101010101;
   uint8_t i=0;
   for (i=0; i<pinsToTestLen; i++) {
     uint8_t flag = (shiftReg >> i) & 0x1;
