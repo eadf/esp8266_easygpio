@@ -58,7 +58,13 @@ To access *all* of the pins in an uniform way you can use
 uint8_t easygpio_inputGet(uint8_t gpio_pin);
 void easygpio_outputSet(uint8_t gpio_pin, uint8_t value);
 ```
-These methods does *not* change input/output status of a pin (for performance reasons). 
+Don't rely on that these methods will change input/output status of a pin.
+
+e.g. if you call ```easygpio_outputSet``` on a input pin, the pin may or may not remain an input. This is because of performance and uniformity reasons (we can't have access methods that intentionally behave differently depending on pin number).
+
+So if you need to change the input/output mode of a pin on the fly, you can use ```GPIO_OUTPUT_SET```,```GPIO_INPUT_GET``` or ```GPIO_DIS_OUTPUT``` (for the non-gpio16 pins) or you can use ```easygpio_pinMode()``` for all of them.
+
+(-Yes, ```easygpio_inputGet()``` uses ```GPIO_INPUT_GET``` right now. But that's only temporary.)
 
 ###Available pins
 
@@ -74,7 +80,7 @@ GPIO12     |
 GPIO13     |
 GPIO14     |
 GPIO15 	   | this pin selects bootmode [(pull down for *normal* boot)](https://github.com/esp8266/esp8266-wiki/wiki/Boot-Process#esp-boot-modes)
-GPIO16      | requires easygpio_inputGet & easygpio_outputSet access methods (no interrupt on this pin)
+GPIO16      | requires easygpio_inputGet() & easygpio_outputSet() access methods (no interrupt on this pin)
 
 All the GPIOs mentioned in ```easgle_soc.h``` are supported, but maybe we should not mess with the internal SPI pins for GPIO.
 
