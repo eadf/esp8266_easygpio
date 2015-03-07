@@ -44,9 +44,7 @@ static void interrupt_handler(void* arg) {
   ......
 ```
 
-See an example [here](https://github.com/eadf/esp8266_digoleserial)
-
-You can use the methods and macros defined in gpio.h (from the sdk) to access the gpio values.
+You can use the methods and macros defined in gpio.h (from the sdk) to access the 'standard' gpio pins (not GPIO16).
 ```
 #include "gpio.h"
 ...
@@ -54,6 +52,13 @@ GPIO_OUTPUT_SET(gpio_no, bit_value) // GPIO_OUTPUT_SET(0,1) sets gpio0 to high
 GPIO_DIS_OUTPUT(gpio_no) // GPIO_DIS_OUTPUT(2) turns off output on gpio2
 GPIO_INPUT_GET(gpio_no) // GPIO_INPUT_GET(12) returns the input value of gpio12
 ```
+
+To access *all* the pins in an uniform way you can use 
+```
+bool easygpio_inputGet(uint8_t gpio_pin);
+void easygpio_outputSet(uint8_t gpio_pin, uint8_t value);
+```
+These methods does *not* change input/output status of a pin (for performance reasons). 
 
 ###Available pins
 
@@ -69,10 +74,18 @@ GPIO12     |
 GPIO13     |
 GPIO14     |
 GPIO15 	   | this pin selects bootmode [(pull down for *normal* boot)](https://github.com/esp8266/esp8266-wiki/wiki/Boot-Process#esp-boot-modes)
-GPIO16      | not implemented yet (no interrupt on this pin)
+GPIO16      | requires easygpio_inputGet & easygpio_outputSet access methods (no interrupt on this pin)
+
+All the GPIOs mentioned in ```easgle_soc.h``` are supported, but maybe we should not mess with the internal SPI pins for GPIO.
+
+## Usage
+
+The project has been designed for easy reuse, just create a folder with these files in it. Then point your ```MODULES``` variable in the ```Makefile``` to that folder (git subtree works great for that purpose)
+
+See an example on how this library can be used [here](https://github.com/eadf/esp8266_digoleserial), [here](https://github.com/eadf/esp_mqtt_lcd), [here](https://github.com/eadf/esp8266_ping), [here](https://github.com/eadf/esp_mqtt_ports) - bha.. practically all of my esp projects uses it.
 
 
-##Required:
+## Required:
 
 esp_iot_sdk_v0.9.4_14_12_19 or higher.
 
