@@ -299,7 +299,7 @@ easygpio_outputSet(uint8_t gpio_pin, uint8_t value) {
  * You can not rely on that this function will switch the gpio to an input like GPIO_INPUT_GET does.
  * So if you have an output gpio you need to switch to input status with GPIO_INPUT_GET or GPIO_DIS_OUTPUT.
  */
-bool ICACHE_FLASH_ATTR
+uint8_t ICACHE_FLASH_ATTR
 easygpio_inputGet(uint8_t gpio_pin) {
   if (16==gpio_pin) {
     return (READ_PERI_REG(RTC_GPIO_IN_DATA) & 1);

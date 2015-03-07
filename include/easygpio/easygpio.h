@@ -88,7 +88,7 @@ bool easygpio_pullMode(uint8_t gpio_pin, EasyGPIO_PullStatus pullStatus);
  * You can not rely on that this function will switch the gpio to an input like GPIO_INPUT_GET does.
  * So if you have an output gpio you need to switch to input status with GPIO_INPUT_GET or GPIO_DIS_OUTPUT.
  */
-bool easygpio_inputGet(uint8_t gpio_pin);
+uint8_t easygpio_inputGet(uint8_t gpio_pin);
 
 /**
  * Uniform way of setting GPIO output value. Handles GPIO 0-16
