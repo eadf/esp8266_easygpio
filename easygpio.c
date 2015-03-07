@@ -271,8 +271,8 @@ easygpio_detachInterrupt(uint8_t gpio_pin) {
 
 /**
  * Uniform way of setting GPIO output value. Handles GPIO 0-16
- * If you know that you won't be using GPIO16 then you'd better off by just using GPIO_OUTPUT_SET.
- * This function will not switch the gpio to an output like GPIO_OUTPUT_SET does.
+ * If you know that you won't be using GPIO16 then you'd better off by just using GPIO_OUTPUT_SET().
+ * You can not rely on that this function will switch the gpio to an output like GPIO_OUTPUT_SET does.
  * So if you have an input gpio you need to toggle to output status with GPIO_OUTPUT_SET.
  */
 void ICACHE_FLASH_ATTR
@@ -296,8 +296,8 @@ easygpio_outputSet(uint8_t gpio_pin, uint8_t value) {
 /**
  * Uniform way of getting GPIO input value. Handles GPIO 0-16
  * If you know that you won't be using GPIO16 then you'd better off by just using GPIO_INPUT_GET().
- * This function will not switch the gpio to an input like GPIO_INPUT_GET does.
- * So if you have an output gpio you need to toggle to output status with GPIO_INPUT_GET.
+ * You can not rely on that this function will switch the gpio to an input like GPIO_INPUT_GET does.
+ * So if you have an output gpio you need to switch to input status with GPIO_INPUT_GET or GPIO_DIS_OUTPUT.
  */
 bool ICACHE_FLASH_ATTR
 easygpio_inputGet(uint8_t gpio_pin) {
