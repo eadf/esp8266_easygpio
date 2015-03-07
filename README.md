@@ -53,7 +53,7 @@ GPIO_DIS_OUTPUT(gpio_no) // GPIO_DIS_OUTPUT(2) turns off output on gpio2
 GPIO_INPUT_GET(gpio_no) // GPIO_INPUT_GET(12) returns the input value of gpio12
 ```
 
-To access *all* the pins in an uniform way you can use 
+To access *all* of the pins in an uniform way you can use 
 ```
 uint8_t easygpio_inputGet(uint8_t gpio_pin);
 void easygpio_outputSet(uint8_t gpio_pin, uint8_t value);
