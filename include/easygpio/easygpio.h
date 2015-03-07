@@ -70,14 +70,32 @@ uint8_t easygpio_countBits(uint32_t gpioMask);
 /**
  * Sets the 'gpio_pin' pin as an input GPIO and sets the pull up and
  * pull down registers for that pin.
+ * 'pullStatus' has no effect on output pins or GPIO16
  */
 bool easygpio_pinMode(uint8_t gpio_pin, EasyGPIO_PullStatus pullStatus, EasyGPIO_PinMode pinMode);
 
 /**
  * Sets the pull up and pull down registers for a pin.
- * 'pullUp' takes precedence over pullDown
+ * This seems to do very little for the actual pull effect
+ * - it's always pull-up for both EASYGPIO_PULLUP and EASYGPIO_PULLDOWN.
+ * But that is something the SDK needs to fix.
  */
 bool easygpio_pullMode(uint8_t gpio_pin, EasyGPIO_PullStatus pullStatus);
 
+/**
+ * Uniform way of getting GPIO input value. Handles GPIO 0-16
+ * If you know that you won't be using GPIO16 then you'd better off by just using GPIO_INPUT_GET().
+ * This function will not switch the gpio to an input like GPIO_INPUT_GET does.
+ * So if you have an output gpio you need to toggle to output status with GPIO_INPUT_GET.
+ */
+bool easygpio_inputGet(uint8_t gpio_pin);
+
+/**
+ * Uniform way of setting GPIO output value. Handles GPIO 0-16
+ * If you know that you won't be using GPIO16 then you'd better off by just using GPIO_OUTPUT_SET().
+ * This function will not switch the gpio to an output like GPIO_OUTPUT_SET does.
+ * So if you have an input gpio you need to toggle to output status with GPIO_OUTPUT_SET.
+ */
+void easygpio_outputSet(uint8_t gpio_pin, uint8_t value);
 
 #endif /* EASYGPIO_INCLUDE_EASYGPIO_EASYGPIO_H_ */

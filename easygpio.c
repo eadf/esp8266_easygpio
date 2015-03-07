@@ -34,6 +34,32 @@
 #include "osapi.h"
 #include "ets_sys.h"
 
+#define EASYGPIO_USE_GPIO_INPUT_GET
+
+static void ICACHE_FLASH_ATTR
+gpio16_output_conf(void) {
+  WRITE_PERI_REG(PAD_XPD_DCDC_CONF,
+      (READ_PERI_REG(PAD_XPD_DCDC_CONF) & 0xffffffbc) | (uint32_t)0x1); // mux configuration for XPD_DCDC to output rtc_gpio0
+
+  WRITE_PERI_REG(RTC_GPIO_CONF,
+      (READ_PERI_REG(RTC_GPIO_CONF) & (uint32_t)0xfffffffe) | (uint32_t)0x0); //mux configuration for out enable
+
+  WRITE_PERI_REG(RTC_GPIO_ENABLE,
+      (READ_PERI_REG(RTC_GPIO_ENABLE) & (uint32_t)0xfffffffe) | (uint32_t)0x1); //out enable
+}
+
+static void ICACHE_FLASH_ATTR
+gpio16_input_conf(void) {
+  WRITE_PERI_REG(PAD_XPD_DCDC_CONF,
+      (READ_PERI_REG(PAD_XPD_DCDC_CONF) & 0xffffffbc) | (uint32_t)0x1); // mux configuration for XPD_DCDC and rtc_gpio0 connection
+
+  WRITE_PERI_REG(RTC_GPIO_CONF,
+      (READ_PERI_REG(RTC_GPIO_CONF) & (uint32_t)0xfffffffe) | (uint32_t)0x0); //mux configuration for out enable
+
+  WRITE_PERI_REG(RTC_GPIO_ENABLE,
+      READ_PERI_REG(RTC_GPIO_ENABLE) & (uint32_t)0xfffffffe);  //out disable
+}
+
 /**
  * Returns the number of active pins in the gpioMask.
  */
@@ -59,7 +85,7 @@ easygpio_getGPIONameFunc(uint8_t gpio_pin, uint32_t *gpio_name, uint8_t *gpio_fu
     return false;
   }
   if (gpio_pin == 16) {
-    os_printf("easygpio_getGPIONameFunc Error: GPIO16 is not implemented\n");
+    os_printf("easygpio_getGPIONameFunc Error: GPIO16 does not have gpio_name and gpio_func\n");
     return false;
   }
   switch ( gpio_pin ) {
@@ -119,7 +145,9 @@ easygpio_getGPIONameFunc(uint8_t gpio_pin, uint32_t *gpio_name, uint8_t *gpio_fu
 
 /**
  * Sets the pull up and pull down registers for a pin.
- * 'pullUp' takes precedence over pullDown
+ * This seems to do very little for the actual pull effect
+ * - it's always pull up for both EASYGPIO_PULLUP and EASYGPIO_PULLDOWN.
+ * But that is something the SDK needs to fix.
  */
 static void ICACHE_FLASH_ATTR
 easygpio_setupPullsByName(uint32_t gpio_name, EasyGPIO_PullStatus pullStatus) {
@@ -138,7 +166,6 @@ easygpio_setupPullsByName(uint32_t gpio_name, EasyGPIO_PullStatus pullStatus) {
 
 /**
  * Sets the pull up and pull down registers for a pin.
- * 'pullUp' takes precedence over pullDown
  */
 bool ICACHE_FLASH_ATTR
 easygpio_pullMode(uint8_t gpio_pin, EasyGPIO_PullStatus pullStatus) {
@@ -154,15 +181,24 @@ easygpio_pullMode(uint8_t gpio_pin, EasyGPIO_PullStatus pullStatus) {
 }
 
 /**
- * Sets the 'gpio_pin' pin as an input GPIO and sets the pull up and
+ * Sets the 'gpio_pin' pin as an GPIO and sets the pull up and
  * pull down registers for that pin.
+ * 'pullStatus' has no effect on output pins or GPIO16
  */
 bool ICACHE_FLASH_ATTR
 easygpio_pinMode(uint8_t gpio_pin, EasyGPIO_PullStatus pullStatus, EasyGPIO_PinMode pinMode) {
   uint32_t gpio_name;
   uint8_t gpio_func;
 
-  if (!easygpio_getGPIONameFunc(gpio_pin, &gpio_name, &gpio_func) ) {
+  if (16==gpio_pin) {
+    // ignoring pull status on GPIO16 for now
+    if (EASYGPIO_OUTPUT == pinMode) {
+      gpio16_output_conf();
+    } else {
+      gpio16_input_conf();
+    }
+    return true;
+  } else if (!easygpio_getGPIONameFunc(gpio_pin, &gpio_name, &gpio_func) ) {
     return false;
   }
 
@@ -170,7 +206,10 @@ easygpio_pinMode(uint8_t gpio_pin, EasyGPIO_PullStatus pullStatus, EasyGPIO_PinM
   easygpio_setupPullsByName(gpio_name, pullStatus);
 
   if (EASYGPIO_OUTPUT != pinMode) {
-    GPIO_DIS_OUTPUT(gpio_pin);
+    GPIO_DIS_OUTPUT(GPIO_ID_PIN(gpio_pin));
+  } else {
+    // must enable the pin or else the WRITE_PERI_REG won't work
+    gpio_output_set(0, 0, 1<<GPIO_ID_PIN(gpio_pin),0);
   }
   return true;
 }
@@ -178,7 +217,6 @@ easygpio_pinMode(uint8_t gpio_pin, EasyGPIO_PullStatus pullStatus, EasyGPIO_PinM
 /**
  * Sets the 'gpio_pin' pin as a GPIO and sets the interrupt to trigger on that pin.
  * The 'interruptArg' is the function argument that will be sent to your interruptHandler
- * (this way you can several interrupts with one interruptHandler)
  */
 bool ICACHE_FLASH_ATTR
 easygpio_attachInterrupt(uint8_t gpio_pin, EasyGPIO_PullStatus pullStatus, void (*interruptHandler)(void *arg), void *interruptArg) {
@@ -229,5 +267,49 @@ easygpio_detachInterrupt(uint8_t gpio_pin) {
   // Quick and dirty fix - just disable the interrupt
   gpio_pin_intr_state_set(GPIO_ID_PIN(gpio_pin), GPIO_PIN_INTR_DISABLE);
   return true;
+}
+
+/**
+ * Uniform way of setting GPIO output value. Handles GPIO 0-16
+ * If you know that you won't be using GPIO16 then you'd better off by just using GPIO_OUTPUT_SET.
+ * This function will not switch the gpio to an output like GPIO_OUTPUT_SET does.
+ * So if you have an input gpio you need to toggle to output status with GPIO_OUTPUT_SET.
+ */
+void ICACHE_FLASH_ATTR
+easygpio_outputSet(uint8_t gpio_pin, uint8_t value) {
+  if (16==gpio_pin) {
+    WRITE_PERI_REG(RTC_GPIO_OUT,
+                   (READ_PERI_REG(RTC_GPIO_OUT) & (uint32_t)0xfffffffe) | (uint32_t)(value & 1));
+  } else {
+#ifdef EASYGPIO_USE_GPIO_OUTPUT_SET
+    GPIO_OUTPUT_SET(GPIO_ID_PIN(gpio_pin), value);
+#else
+    if (value&1){
+      WRITE_PERI_REG( PERIPHS_GPIO_BASEADDR, READ_PERI_REG(PERIPHS_GPIO_BASEADDR) | (0x1UL<<gpio_pin));
+    } else {
+      WRITE_PERI_REG( PERIPHS_GPIO_BASEADDR, READ_PERI_REG(PERIPHS_GPIO_BASEADDR) & ~(0x1UL<<gpio_pin));
+    }
+#endif
+  }
+}
+
+/**
+ * Uniform way of getting GPIO input value. Handles GPIO 0-16
+ * If you know that you won't be using GPIO16 then you'd better off by just using GPIO_INPUT_GET().
+ * This function will not switch the gpio to an input like GPIO_INPUT_GET does.
+ * So if you have an output gpio you need to toggle to output status with GPIO_INPUT_GET.
+ */
+bool ICACHE_FLASH_ATTR
+easygpio_inputGet(uint8_t gpio_pin) {
+  if (16==gpio_pin) {
+    return (READ_PERI_REG(RTC_GPIO_IN_DATA) & 1);
+  } else {
+#ifdef EASYGPIO_USE_GPIO_INPUT_GET
+    return GPIO_INPUT_GET(GPIO_ID_PIN(gpio_pin));
+#else
+  // this does *not* work, PERIPHS_GPIO_BASEADDR is the wrong address
+  return ((READ_PERI_REG(PERIPHS_GPIO_BASEADDR) > gpio_pin)  & 1);
+#endif
+  }
 }
 
