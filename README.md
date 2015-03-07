@@ -55,7 +55,7 @@ GPIO_INPUT_GET(gpio_no) // GPIO_INPUT_GET(12) returns the input value of gpio12
 
 To access *all* the pins in an uniform way you can use 
 ```
-bool easygpio_inputGet(uint8_t gpio_pin);
+uint8_t easygpio_inputGet(uint8_t gpio_pin);
 void easygpio_outputSet(uint8_t gpio_pin, uint8_t value);
 ```
 These methods does *not* change input/output status of a pin (for performance reasons). 
