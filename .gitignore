@@ -5,7 +5,6 @@
 
 # esp build files
 *.bin
-*.keep
 
 # Object files
 *.o
