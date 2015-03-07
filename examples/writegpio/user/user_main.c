@@ -1,18 +1,30 @@
 /*
- *  Example read temperature and humidity from DHT22
- *  
- *  https://www.sparkfun.com/datasheets/Sensors/Temperature/DHT22.pdf
- *  https://www.adafruit.com/datasheets/Digital%20humidity%20and%20temperature%20sensor%20AM2302.pdf
- * 
- *  For a single device, connect as follows:
- *  DHT22 1 (Vcc) to Vcc (3.3 Volts)
- *  DHT22 2 (DATA_OUT) to any of these ESP pins: GPIO0, GPIO2, GPIO4, GPIO5, GPIO12, GPIO13 or GPIO14
- *          This pin also needs a 5K pull-up resistor connected to Vcc.
- *  DHT22 3 (NC)
- *  DHT22 4 (GND) to GND
- * 
- * When the DHT22 is powered by 3.3 Volt the cables should be less than 30cm long.
+ * Copyright (c) 2015, eadf (https://github.com/eadf)
+ * All rights reserved.
  *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * * Redistributions of source code must retain the above copyright notice,
+ * this list of conditions and the following disclaimer.
+ * * Redistributions in binary form must reproduce the above copyright
+ * notice, this list of conditions and the following disclaimer in the
+ * documentation and/or other materials provided with the distribution.
+ * * Neither the name of Redis nor the names of its contributors may be used
+ * to endorse or promote products derived from this software without
+ * specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
  */
 
 #include <osapi.h>
@@ -21,13 +33,14 @@
 #include "easygpio/easygpio.h"
 #include "stdout/stdout.h"
 
-#define SAMPLE_PERIOD 5000
+#define SAMPLE_PERIOD 5000 // 5 seconds
 static os_timer_t dht22_timer;
 uint8_t pinsToTest[] = {0,2,4,5,12,13,14,15,16};
 uint8_t pinsToTestLen = 9;
 
 static void ICACHE_FLASH_ATTR
 loop(void) {
+  // set this shift-rotating pattern to anything you like
   static uint32_t shiftReg = 0b101010101;
   uint8_t i=0;
   for (i=0; i<pinsToTestLen; i++) {
@@ -39,7 +52,7 @@ loop(void) {
     }
   }
 
-  os_printf(" perireg=%x\n", READ_PERI_REG(PERIPHS_GPIO_BASEADDR));
+  os_printf("\n");
   if (shiftReg & 0x1) {
     shiftReg |= 0b1000000000;
   }
