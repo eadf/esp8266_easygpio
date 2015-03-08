@@ -71,6 +71,8 @@ The project has been designed for easy reuse, just create a folder with these fi
 
 See an example on how this library can be used [here](https://github.com/eadf/esp8266_digoleserial), [here](https://github.com/eadf/esp_mqtt_lcd), [here](https://github.com/eadf/esp8266_ping), [here](https://github.com/eadf/esp_mqtt_ports) - bha.. practically all of my esp projects uses it.
 
+## Todo
+* Find the correct ```READ_PERI_REG()``` address for ```easygpio_inputGet()```, now it's simply using ```GPIO_INPUT_GET()```
 
 ## Required:
 
