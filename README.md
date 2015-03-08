@@ -67,7 +67,7 @@ All the GPIOs mentioned in ```easgle_soc.h``` are supported, but maybe we should
 
 ## Usage
 
-The project has been designed for easy reuse, just create a folder with these files in it. Then point your ```MODULES``` variable (or whatever subdirectory construct you use) in the ```Makefile``` to that folder ([git subtree](http://blogs.atlassian.com/2013/05/alternatives-to-git-submodule-git-subtree) works great for that purpose). If you find yourself manually copying these individial .c and .h files - you're doing it wrong.
+The project has been designed for easy reuse, just create a folder with these files in it ([git subtree](http://blogs.atlassian.com/2013/05/alternatives-to-git-submodule-git-subtree) works great for that purpose). Then point your ```MODULES``` variable (or whatever subdirectory construct you use) in the ```Makefile``` to that folder . If you find yourself manually copying these individial .c and .h files - you're doing it wrong.
 
 See an example on how this library can be used [here](https://github.com/eadf/esp8266_digoleserial), [here](https://github.com/eadf/esp_mqtt_lcd), [here](https://github.com/eadf/esp8266_ping), [here](https://github.com/eadf/esp_mqtt_ports) - bha.. practically all of my esp projects uses it.
 
