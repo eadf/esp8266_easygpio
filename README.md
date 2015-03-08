@@ -45,7 +45,7 @@ However, you should not rely on that these methods will change input/output stat
 
 e.g. if you call ```easygpio_outputSet``` on an input pin, the pin may or may not remain an input. This is because of performance and uniformity reasons. ```easygpio_outputSet(16,1)``` will never flip gpio16 to an output, and we can't have access methods with different semantics depending on pin number).
 
-So if you need to change the input/output mode of a pin on the fly, you can use ```GPIO_OUTPUT_SET``` or ```GPIO_DIS_OUTPUT``` (for the non-gpio16 pins) or you can use ```easygpio_pinMode()``` for all of them.
+So if you need to change the input/output mode of a pin on the fly, you can use ```easygpio_outputDisable()``` or ```easygpio_outputEnable()```.
 
 ###Available pins
 

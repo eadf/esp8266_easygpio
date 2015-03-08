@@ -47,6 +47,7 @@ loop(void) {
     uint8_t flag = (shiftReg >> i) & 0x1;
     os_printf("Setting GPIO%d=%d", pinsToTest[i], flag);
     easygpio_outputSet(pinsToTest[i], flag);
+    //easygpio_outputEnable(pinsToTest[i], flag);
     if(i<pinsToTestLen-1) {
       os_printf(", ");
     }

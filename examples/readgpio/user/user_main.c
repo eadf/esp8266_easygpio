@@ -42,6 +42,7 @@ static void ICACHE_FLASH_ATTR
 loop(void) {
   uint8_t i=0;
   for (i=0; i<pinsToTestLen; i++) {
+    easygpio_outputDisable(pinsToTest[i]);
     os_printf("GPIO%d=>%d", pinsToTest[i], easygpio_inputGet(pinsToTest[i]));
     if(i<pinsToTestLen-1) {
       os_printf(", ");

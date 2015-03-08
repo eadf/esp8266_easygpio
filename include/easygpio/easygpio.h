@@ -68,8 +68,8 @@ bool easygpio_detachInterrupt(uint8_t gpio_pin);
 uint8_t easygpio_countBits(uint32_t gpioMask);
 
 /**
- * Sets the 'gpio_pin' pin as an input GPIO and sets the pull up and
- * pull down registers for that pin.
+ * Sets the 'gpio_pin' pin as a GPIO and sets the pull-up and
+ * pull-down registers for that pin.
  * 'pullStatus' has no effect on output pins or GPIO16
  */
 bool easygpio_pinMode(uint8_t gpio_pin, EasyGPIO_PullStatus pullStatus, EasyGPIO_PinMode pinMode);
@@ -83,17 +83,37 @@ bool easygpio_pinMode(uint8_t gpio_pin, EasyGPIO_PullStatus pullStatus, EasyGPIO
 bool easygpio_pullMode(uint8_t gpio_pin, EasyGPIO_PullStatus pullStatus);
 
 /**
- * Uniform way of getting GPIO input value. Handles GPIO 0-16
+ * Uniform way of getting GPIO input value. Handles GPIO 0-16.
+ * The pin must be initiated with easygpio_pinMode() so that the pin mux is setup as a gpio in the first place.
  * If you know that you won't be using GPIO16 then you'd better off by just using GPIO_INPUT_GET().
  */
 uint8_t easygpio_inputGet(uint8_t gpio_pin);
 
 /**
- * Uniform way of setting GPIO output value. Handles GPIO 0-16
- * If you know that you won't be using GPIO16 then you'd better off by just using GPIO_OUTPUT_SET().
+ * Uniform way of setting GPIO output value. Handles GPIO 0-16.
+ *
  * You can not rely on that this function will switch the gpio to an output like GPIO_OUTPUT_SET does.
- * So if you have an input gpio you need to toggle to output status with GPIO_OUTPUT_SET.
+ * Use easygpio_outputEnable() to change an input gpio to output mode.
  */
 void easygpio_outputSet(uint8_t gpio_pin, uint8_t value);
+
+/**
+ * Uniform way of turning an output GPIO pin into input mode. Handles GPIO 0-16.
+ * The pin must be initiated with easygpio_pinMode() so that the pin mux is setup as a gpio in the first place.
+ * This function does the same thing as GPIO_DIS_OUTPUT, but works on GPIO16 too.
+ */
+void easygpio_outputDisable(uint8_t gpio_pin);
+
+/**
+ * Uniform way of turning an input GPIO pin into output mode. Handles GPIO 0-16.
+ * The pin must be initiated with easygpio_pinMode() so that the pin mux is setup as a gpio in the first place.
+ *
+ * This function:
+ *  - should only be used to convert a input pin into an output pin.
+ *  - is a little bit slower than easygpio_outputSet() so you should use that
+ *    function to just change output value.
+ *  - does the same thing as GPIO_OUTPUT_SET, but works on GPIO16 too.
+ */
+void easygpio_outputEnable(uint8_t gpio_pin, uint8_t value);
 
 #endif /* EASYGPIO_INCLUDE_EASYGPIO_EASYGPIO_H_ */
