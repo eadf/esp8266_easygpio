@@ -73,6 +73,7 @@ See an example on how this library can be used [here](https://github.com/eadf/es
 
 ## Todo
 * Find the correct ```READ_PERI_REG()``` address for ```easygpio_inputGet()```, now it's simply using ```GPIO_INPUT_GET()```
+* Whenever pull-up or pull-down is used the effect will always be pull-up. But that's something that needs to be fixed in the sdk.
 
 ## Required:
 
