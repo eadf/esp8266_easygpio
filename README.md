@@ -8,19 +8,12 @@ To setup a pin as a GPIO input you can now just do this:
 ```
 #include "easygpio/easygpio.h"
 ...
-
-uint8_t gpio_pin = 0;
-EasyGPIO_PullStatus pullStatus = EASYGPIO_NOPULL;
-EasyGPIO_PinMode pinMode = EASYGPIO_INPUT;
-bool easygpio_pinMode(gpio_pin, pullStatus, pinMode);
+bool easygpio_pinMode(0, EASYGPIO_NOPULL, EASYGPIO_INPUT);
 ```
 
 Same thing with outputs:
 ```
-uint8_t gpio_pin = 0;
-EasyGPIO_PullStatus pullStatus = EASYGPIO_NOPULL;
-EasyGPIO_PinMode pinMode = EASYGPIO_OUTPUT;
-bool easygpio_pinMode(gpio_pin, pullStatus, pinMode);
+bool easygpio_pinMode(1, EASYGPIO_NOPULL, EASYGPIO_OUTPUT);
 ```
 pullStatus does not apply to output pins.
 
@@ -32,16 +25,6 @@ bool easygpio_getGPIONameFunc(uint8_t gpio_pin, uint32_t *gpio_name, uint8_t *gp
 You can even setup an interrupt handler:
 ```
 bool easygpio_attachInterrupt(uint8_t gpio_pin, EasyGPIO_PullStatus pullStatus, void (*interruptHandler)(void* arg), void *interruptArg)
-```
-
-But you will still have to do this little dance in your interrupt handler code:
-```
-
-static void interrupt_handler(void* arg) {
-  uint32_t gpio_status = GPIO_REG_READ(GPIO_STATUS_ADDRESS);
-  //clear interrupt status
-  GPIO_REG_WRITE(GPIO_STATUS_W1TC_ADDRESS, gpio_status & BIT(my_interrupt_gpio_pin));
-  ......
 ```
 
 You can use the methods and macros defined in gpio.h (from the sdk) to access the 'standard' gpio pins (not GPIO16).
@@ -58,13 +41,11 @@ To access *all* of the pins in an uniform way you can use
 uint8_t easygpio_inputGet(uint8_t gpio_pin);
 void easygpio_outputSet(uint8_t gpio_pin, uint8_t value);
 ```
-Don't rely on that these methods will change input/output status of a pin.
+However, you should not rely on that these methods will change input/output status of a pin (like the gpio.h macros does).
 
-e.g. if you call ```easygpio_outputSet``` on a input pin, the pin may or may not remain an input. This is because of performance and uniformity reasons (we can't have access methods that intentionally behave differently depending on pin number).
+e.g. if you call ```easygpio_outputSet``` on an input pin, the pin may or may not remain an input. This is because of performance and uniformity reasons. ```easygpio_outputSet(16,1)``` will never flip gpio16 to an output, and we can't have access methods with different semantics depending on pin number).
 
-So if you need to change the input/output mode of a pin on the fly, you can use ```GPIO_OUTPUT_SET```,```GPIO_INPUT_GET``` or ```GPIO_DIS_OUTPUT``` (for the non-gpio16 pins) or you can use ```easygpio_pinMode()``` for all of them.
-
-(-Yes, ```easygpio_inputGet()``` uses ```GPIO_INPUT_GET``` right now. But that's only temporary.)
+So if you need to change the input/output mode of a pin on the fly, you can use ```GPIO_OUTPUT_SET``` or ```GPIO_DIS_OUTPUT``` (for the non-gpio16 pins) or you can use ```easygpio_pinMode()``` for all of them.
 
 ###Available pins
 
@@ -86,7 +67,7 @@ All the GPIOs mentioned in ```easgle_soc.h``` are supported, but maybe we should
 
 ## Usage
 
-The project has been designed for easy reuse, just create a folder with these files in it. Then point your ```MODULES``` variable in the ```Makefile``` to that folder ([git subtree](http://blogs.atlassian.com/2013/05/alternatives-to-git-submodule-git-subtree) works great for that purpose)
+The project has been designed for easy reuse, just create a folder with these files in it. Then point your ```MODULES``` variable (or whatever subdirectory construct you use) in the ```Makefile``` to that folder ([git subtree](http://blogs.atlassian.com/2013/05/alternatives-to-git-submodule-git-subtree) works great for that purpose). If you find yourself manually copying these individial .c and .h files - you're doing it wrong.
 
 See an example on how this library can be used [here](https://github.com/eadf/esp8266_digoleserial), [here](https://github.com/eadf/esp_mqtt_lcd), [here](https://github.com/eadf/esp8266_ping), [here](https://github.com/eadf/esp_mqtt_ports) - bha.. practically all of my esp projects uses it.
 
