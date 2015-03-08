@@ -296,8 +296,6 @@ easygpio_outputSet(uint8_t gpio_pin, uint8_t value) {
 /**
  * Uniform way of getting GPIO input value. Handles GPIO 0-16
  * If you know that you won't be using GPIO16 then you'd better off by just using GPIO_INPUT_GET().
- * You can not rely on that this function will switch the gpio to an input like GPIO_INPUT_GET does.
- * So if you have an output gpio you need to switch to input status with GPIO_INPUT_GET or GPIO_DIS_OUTPUT.
  */
 uint8_t ICACHE_FLASH_ATTR
 easygpio_inputGet(uint8_t gpio_pin) {
@@ -307,8 +305,8 @@ easygpio_inputGet(uint8_t gpio_pin) {
 #ifdef EASYGPIO_USE_GPIO_INPUT_GET
     return GPIO_INPUT_GET(GPIO_ID_PIN(gpio_pin));
 #else
-  // this does *not* work, PERIPHS_GPIO_BASEADDR is the wrong address
-  return ((READ_PERI_REG(PERIPHS_GPIO_BASEADDR) > gpio_pin)  & 1);
+  // this does *not* work, maybe GPIO_IN_ADDRESS is the wrong address
+  return ((GPIO_REG_READ(GPIO_IN_ADDRESS) > gpio_pin)  & 1);
 #endif
   }
 }
